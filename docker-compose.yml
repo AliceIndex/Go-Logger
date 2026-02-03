@@ -9,10 +9,10 @@ services:
     environment:
       - DB_HOST=db
       - DB_USER=user
-      - DB_PASSWORD=password
+      - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=logger_db
       # ▼ 追加 (URLはご自身のものに置き換えてください)
-      - DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/1464124114527584287/cgmpipkqYzrwuGR92v_Byiaoldk9GB3hOwYte1NnRRhQE4BkskvNroRi3oFwUfN6dhZf
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
     restart: always
 
   db:
@@ -22,6 +22,6 @@ services:
       - ./db/data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=logger_db
     restart: always
