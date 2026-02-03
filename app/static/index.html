@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Server Access Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; }
+        #logTable { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        #logTable th, #logTable td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        #logTable th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>📊 Access Dashboard</h1>
+    
+    <canvas id="accessChart" width="400" height="150"></canvas>
+
+    <h2>Recent Logs</h2>
+    <table id="logTable">
+        <thead>
+            <tr><th>ID</th><th>Time</th><th>User Agent</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        // ページ読み込み時に実行
+        window.onload = async () => {
+            // Goで作ったAPIからデータを取得
+            const response = await fetch('api/logs');
+            const logs = await response.json();
+
+            const tbody = document.querySelector('#logTable tbody');
+            const timeLabels = [];
+            const accessCounts = {};
+
+            logs.forEach(log => {
+                // テーブルに行を追加
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${log.id}</td><td>${new Date(log.created_at).toLocaleString()}</td><td>${log.user_agent}</td>`;
+                tbody.appendChild(tr);
+
+                // グラフ用データの集計（時間ごとのアクセス数など）
+                const time = new Date(log.created_at).toLocaleTimeString();
+                timeLabels.push(time);
+            });
+
+            // グラフを描画 (Chart.js)
+            new Chart(document.getElementById('accessChart'), {
+                type: 'line',
+                data: {
+                    labels: timeLabels.reverse(), // 時間軸
+                    datasets: [{
+                        label: 'Access Timing',
+                        data: logs.map((_, i) => i + 1), // 単純な積み上げ
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                }
+            });
+        };
+    </script>
+</body>
+</html>

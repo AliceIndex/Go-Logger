@@ -1,0 +1,27 @@
+services:
+  app:
+    build: ./app
+    container_name: go-logger-app
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=logger_db
+      # ▼ 追加 (URLはご自身のものに置き換えてください)
+      - DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/1464124114527584287/cgmpipkqYzrwuGR92v_Byiaoldk9GB3hOwYte1NnRRhQE4BkskvNroRi3oFwUfN6dhZf
+    restart: always
+
+  db:
+    image: postgres:15-alpine
+    container_name: go-logger-db
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=logger_db
+    restart: always
